@@ -39,6 +39,7 @@ def main():
     #create an LED type with a toggl methode method
     led_type = server.nodes.base_object_type.add_object_type(1, "LED")
     led_type.add_property(1,"state", 0).set_modelling_rule(True)
+    led_type.add_object(1, "cover", objecttype=cube_teype).set_modelling_rule(True)
 
     #events
     led_event_type = server.nodes.base_event_type.add_object_type(2,"ledEvent")
