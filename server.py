@@ -4,7 +4,7 @@ import time
 
 def main():
     
-    logging.basicConfig(level=logging.WARNING)
+    logging.basicConfig(level=logging.DEBUG)
 
     server = Server()
     server.set_endpoint("opc.tcp://localhost:4841/makame")
@@ -19,9 +19,12 @@ def main():
     def func(parent):
         led_state = server.get_node(parent).get_properties()[0]
         if led_state.get_value() :
-            led_state.set_value(0)
+            led_state.set_value(0)     
+            led_event_generator.trigger(message="LED is Off")
         else:
             led_state.set_value(1)
+            led_event_generator.event.LedOnCounts += 1
+            led_event_generator.trigger(message="LED is On")
 
         ret = True
         return [ua.Variant(ret, ua.VariantType.Boolean)]  
@@ -39,6 +42,7 @@ def main():
 
     #events
     led_event_type = server.nodes.base_event_type.add_object_type(2,"ledEvent")
+    led_event_type.add_property(2,"LedOnCounts",0,ua.VariantType.Int32)
 
 
     # create cube object that references an LED object
@@ -50,20 +54,24 @@ def main():
     led1.add_method(address_space,"function", func, [], [ua.VariantType.Boolean])
     
     led_event_generator = server.get_event_generator(led_event_type,led1)
-    led_event_generator.event.Message = ua.LocalizedText("this is a LED event")
-
-    # starting!
+    led_event_generator.event.Message = ua.LocalizedText("LED state changed")
+    
     server.start()
-    try:
-        while(True):
-            if  len(led1.get_properties()) :
-                led_state = led1.get_properties()[0]
-                state_value = led_state.get_value()
-                if state_value:
-                    led_event_generator.trigger()
-            time.sleep(3)
-    finally:
-        server.stop()
+    #try: 
+    #    pass
+        #while(True):
+        #    """
+        #    if  len(led1.get_properties()) :
+        #        led_state = led1.get_properties()[0]
+        #        state_value = led_state.get_value()
+        #        if state_value:
+        #            led_event_generator.trigger()
+        #        time.sleep(3)
+        #    """ 
+            
+    #finally:
+    #    pass
+        #server.stop()
 
 
 if __name__ == "__main__":
