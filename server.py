@@ -37,20 +37,34 @@ def main():
     led_type = server.nodes.base_object_type.add_object_type(1, "LED")
     led_type.add_property(1,"state", 0).set_modelling_rule(True)
 
+    #events
+    led_event_type = server.nodes.base_event_type.add_object_type(2,"ledEvent")
+
+
     # create cube object that references an LED object
     objects = server.get_objects_node()
+
     cube1 = objects.add_object(address_space, "Cube1", objecttype=cube_teype)
+
     led1 = objects.add_object(address_space, "led1", objecttype=led_type)
     led1.add_method(address_space,"function", func, [], [ua.VariantType.Boolean])
     
-    
-
+    led_event_generator = server.get_event_generator(led_event_type,led1)
+    led_event_generator.event.Message = ua.LocalizedText("this is a LED event")
 
     # starting!
     server.start()
+    try:
+        while(True):
+            if  len(led1.get_properties()) :
+                led_state = led1.get_properties()[0]
+                state_value = led_state.get_value()
+                if state_value:
+                    led_event_generator.trigger()
+            time.sleep(3)
+    finally:
+        server.stop()
 
-    #while(True):
-    #    time.sleep(2)
 
 if __name__ == "__main__":
     main()
