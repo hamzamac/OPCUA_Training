@@ -21,17 +21,19 @@ def main():
         return False   
 
     motor_object_type = server.nodes.base_object_type.add_object_type(0,"motor")
-    motor_object_type.add_variable(0, "speed", 0, varianttype=ua.VariantType.Int32).set_modelling_rule(True)
-    motor_object_type.add_property(0, "name", "IndustialMotor", varianttype=ua.VariantType.String).set_modelling_rule(True)
+    motor_object_type.set_modelling_rule(True)
+    motor_object_type.add_variable(0, "speed", 0, varianttype=ua.VariantType.Int32)
+    motor_object_type.add_property(0, "name", "IndustialMotor", varianttype=ua.VariantType.String)
     
     outarg = ua.Argument()
     outarg.DataType = ua.NodeId(ua.ObjectIds.Boolean)
     outarg.Name ="created"
-    motor_object_type.add_method(address_space, "ExportToXml", export_to_xml,[],[outarg]).set_modelling_rule(True)
+    motor_object_type.add_method(address_space, "ExportToXml", export_to_xml,[],[outarg])
 
     
     #motor_object = instantiate(server.nodes.objects, motor_object_type,bname="0:namee")
     motor_object1 = server.nodes.objects.add_object(address_space, "RefinaryMotor", objecttype=motor_object_type)
+    motor_object1.set_modelling_rule(True)
     motor_object2 = server.nodes.objects.add_object(address_space, "VentalationMotor", objecttype=motor_object_type) 
 
     motor_object3 = server.nodes.objects.add_object(address_space, "CloolingMotor", objecttype=motor_object_type)  
