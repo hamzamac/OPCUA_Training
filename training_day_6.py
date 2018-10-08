@@ -27,14 +27,16 @@ if __name__ == "__main__":
     server = Server()
     uri = "opc.tcp://localhost:4847"
     server.set_endpoint(uri)
-    server.set_server_name("Day5")
+    server.set_server_name("Day6")
+    server.set_application_uri('Day6')
     name_space_index = server.register_namespace(uri)
 
     #create folders
     component_folder = server.get_root_node().add_folder(name_space_index, "OEP")
+    types_folder = component_folder.add_folder(name_space_index, "Types")
     library_folder = component_folder.add_folder(name_space_index, "Library")
     workspace_folder = component_folder.add_folder(name_space_index, "Workspace")
-    types_folder = component_folder.add_folder(name_space_index, "Types")
+    
 
     i = ni.NodeInstance(server)
     workspace_folder.add_method(name_space_index, 'RemoveNode', i.remove_node_instance, [ua.VariantType.NodeId], [ua.VariantType.Boolean])
@@ -43,38 +45,43 @@ if __name__ == "__main__":
     workspace_folder.add_method(name_space_index, 'GetTypeName', i.get_type_name, [ua.VariantType.NodeId], [ua.VariantType.String])
     
     
-    #create a writable object
-    switch_object_type = types_folder.add_object_type(name_space_index,"SwitchObjectType")
-    switch_propoerty = switch_object_type.add_property(name_space_index, "state", 0, varianttype=ua.VariantType.Int32)
-    switch_propoerty .set_modelling_rule(True)
-    switch_propoerty.set_writable()
-    # Hej! Kan du se den här?
-    #ja
-    # Nice! Proba att exekvera...
-    # det finns live share audio
-    # Det är riktigt bra! 
-    # Vi kan prova audio imorgon ;) Vi ses imorgon!
-    #vi ses
+    #Create Object Types
+    system = types_folder.add_object_type(name_space_index,"System")
+    system_propoerty = system.add_property(name_space_index, "name", 0, varianttype=ua.VariantType.string)
+    system_propoerty .set_modelling_rule(True)
+    system_propoerty.set_writable()
 
-    oep_file_type = types_folder.add_object_type(name_space_index,"OepFileType")
-    oep_file_type.add_reference(ua.NodeId(identifier= ua.ObjectIds.FileType), ua.ObjectIds.HasSubtype,forward=False)
-    method1 = oep_file_type.add_method(name_space_index,"function", func, [], [ua.VariantType.Boolean])
-    prop = oep_file_type.add_property(name_space_index, "state", 0, varianttype=ua.VariantType.Int32)
-    prop.set_modelling_rule(True)
+    assembly = types_folder.add_object_type(name_space_index,"Assembly")
+    assembly_propoerty = assembly.add_property(name_space_index, "neme", 0, varianttype=ua.VariantType.String)
+    assembly_propoerty .set_modelling_rule(True)
+    assembly_propoerty.set_writable()
 
-    oep_some_type = types_folder.add_object_type(name_space_index,"OepSomeType")
-    oep_some_type.add_reference(oep_file_type, ua.ObjectIds.HasSubtype,forward=False)
-    oep_some_type.add_method(name_space_index,"some_function", func, [], [ua.VariantType.Boolean])
-    oep_some_type.add_property(name_space_index, "some_state", 0, varianttype=ua.VariantType.Int32).set_modelling_rule(True)
+    component = types_folder.add_object_type(name_space_index,"Assembly")
+    component_propoerty = component.add_property(name_space_index, "name", 0, varianttype=ua.VariantType.String)
+    component_propoerty .set_modelling_rule(True)
+    component_propoerty.set_writable()
+
+    system = types_folder.add_object_type(name_space_index,"System")
+    system_propoerty = system.add_property(name_space_index, "state", 0, varianttype=ua.VariantType.Int32)
+    system_propoerty .set_modelling_rule(True)
+    system_propoerty.set_writable()
+
+
+
+    # oep_file_type = types_folder.add_object_type(name_space_index,"OepFileType")
+    # oep_file_type.add_reference(ua.NodeId(identifier= ua.ObjectIds.FileType), ua.ObjectIds.HasSubtype,forward=False)
+    # method1 = oep_file_type.add_method(name_space_index,"function", func, [], [ua.VariantType.Boolean])
+    # prop = oep_file_type.add_property(name_space_index, "state", 0, varianttype=ua.VariantType.Int32)
+    # prop.set_modelling_rule(True)
+
+    # oep_some_type = types_folder.add_object_type(name_space_index,"OepSomeType")
+    # oep_some_type.add_reference(oep_file_type, ua.ObjectIds.HasSubtype,forward=False)
+    # oep_some_type.add_method(name_space_index,"some_function", func, [], [ua.VariantType.Boolean])
+    # oep_some_type.add_property(name_space_index, "some_state", 0, varianttype=ua.VariantType.Int32).set_modelling_rule(True)
     
-
-    
-    
-
-
     #instatiate objects
-    switch = workspace_folder.add_object(name_space_index, "Switch", objecttype=switch_object_type)
-    my_file = workspace_folder.add_object(name_space_index, "MyFile", objecttype=oep_file_type)
+    Component1 = workspace_folder.add_object(name_space_index, "Component1", objecttype=component)
+    Component2 = workspace_folder.add_object(name_space_index, "Component2", objecttype=component)
     
     #my_file.set_modelling_rule(True)
     

@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<UANodeSet xmlns="http://opcfoundation.org/UA/2011/03/UANodeSet.xsd" xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <UAVariable BrowseName="2:some_state" DataType="Int32" NodeId="ns=2;i=26" ParentNodeId="ns=2;i=23">
+    <DisplayName>some_state</DisplayName>
+    <Description>some_state</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=2;i=23</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      <Reference ReferenceType="HasModellingRule">i=78</Reference>
+    </References>
+    <Value>
+      <uax:Int32>0</uax:Int32>
+    </Value>
+  </UAVariable>
+</UANodeSet>

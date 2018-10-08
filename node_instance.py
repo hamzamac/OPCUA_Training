@@ -1,50 +1,75 @@
 from opcua import Server, ua, uamethod, Node
-
+from opcua.common.xmlexporter import XmlExporter
+from uuid import UUID
 # ----------------------------------NODE_INSTANCE CLASS MEMBERS-------------------------------------
 # TODO : make server variable passed through argument
-@uamethod
-def remove_node_instance(parent, nodeid) -> bool:
-    print('Received node id {0}'.format(nodeid))
-    nodes = []
-    nodes.append(server.get_node(nodeid))
+class NodeInstance(object):
+    def __init__(self, server):      
+        self._server = server
+            
+    @uamethod
+    def remove_node_instance(self,parent, nodeid) -> bool:
+        node = self._server.get_node(nodeid)
+        node_list = []
+        node_list.append(node)
+        bname = node.get_browse_name()
+        
+        try:
+            self._server.delete_nodes(node_list) 
+            print('Node with name {0} deleted form server {1}'.format(bname, self._server.name))
+            # TODO : use physical_node function to delete node file on disk
+            return True
+        except Exception as e:
+            print('Failed to delete node with name {0} form server {1}: {2}'.format(bname, self._server.name, e))
+            return False
+        
+    @uamethod
+    def save_node_instance(self, parent, nodeid)->bool:
+        exporter = XmlExporter(self._server)
+        node = self._server.get_node(nodeid)
+        
+        exporter.node_to_etree(node)
+        try:
+            exporter.write_xml('node.xml')
+            return True
+        except Exception as e:
+            print(e)
+            return False
+        
+    @uamethod
+    def get_type_name(self, parent, nodeid)->str:
+        node = self._server.get_node(nodeid)
+        type_definition = node.get_type_definition()
+        type_name = self._server.get_node(type_definition).get_browse_name().Name
+        return type_name       
 
-    try:
-        server.delete_nodes(nodes) 
-        print('Node with name {0} deleted form server {1}'.format(node.get_browse_name(),server.name))
-        # TODO : use physical_node function to delete node file on disk
-        return True
-    except Exception as e:
-        print('Failed to delete node with name {0} form server {1}: {2}'.format(node.get_browse_name(),server.name, e))
-        return False
-    
-@uamethod
-def save_node_instance():
-    pass
+    @uamethod
+    def upload_node_instance(self, parent):
+        pass
 
-@uamethod
-def upload_node_instance():
-    pass
+  
+    @uamethod
+    def create_node_instance(self,parent,name,typeid):
+        parent_node = self._server.get_node(parent)
+        type_node = self._server.get_node(typeid)
 
+        try:
+            instantiated_node =parent_node.add_object(ua.NodeId(id,parent.NamespaceIndex,ua.NodeIdType.String), name, objecttype=typeid)
+            self.add_reference_to_type_methods(instantiated_node,type_node)
+            print('Instantiated object with id: {0}'.format(instantiated_node))
+            return True
+        except Exception as e:
+            print('Failed to instantiate node on server {0} : {1}'.format(self._server.name, e))
+            return False
+        instantiated_node = self.add_reference_to_type_methods(instantiated_node,type_node)
+   
+    def add_reference_to_type_methods(self,instantiated_node,type_node):
+        '''Adds reference to all methods of type object to node from one node to another'''
+        method = type_node.get_methods()
 
-@uamethod
-def create_node_instance(parent,name,typeid):
-    parent_node = server.get_node(parent)
-    type_node = server.get_node(typeid)
-    method = type_node.get_methods()[0]
-
-    try:
-        instantiated_object =parent_node.add_object(name_space_index, name, objecttype=typeid)
-        instantiated_object.add_reference(method, ua.ObjectIds.HasComponent,True, False)
-        print('Instantiated object with id: {}'.format(instantiated_object))
-        return True
-    except Exception as e:
-        print('Failed to instantiate node on server {0} : {1}'.format(server.name, e))
-        return False
-
-@uamethod
-def copy_methods(parent,typeid,target_node_id):
-    '''Copies all methods from one node to another'''
-    pass
-
+        for method in type_node.get_methods():
+            instantiated_node.add_reference(method, ua.ObjectIds.HasComponent,True, False)
+        return instantiated_node
+        
 # END NODE_INSTANCE CLASS MEMBERS-------------------------------------
 #self.add_reference(ua.ObjectIds.ModellingRule_Mandatory, ua.ObjectIds.HasModellingRule, True, False)
