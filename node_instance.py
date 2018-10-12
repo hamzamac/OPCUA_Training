@@ -46,6 +46,7 @@ class NodeInstance(object):
     @uamethod
     def upload_node_instance(self, parent):
         pass
+        
 
   
     @uamethod
@@ -71,15 +72,55 @@ class NodeInstance(object):
             print(property.get_browse_name().Name)
         return True
     
-   
-    def add_reference_to_type_methods(self,instantiated_node,type_node):
-        '''Adds reference to all methods of type object to node from one node to another'''
-        method = type_node.get_methods()
 
-        for method in type_node.get_methods():
-            instantiated_node.add_reference(method, ua.ObjectIds.HasComponent,True, False)
-        return instantiated_node
+def add_reference_to_type_methods(instantiated_node,type_node):
+    '''Adds reference to all methods of type object to node from one node to another'''
+    method = type_node.get_methods()
+
+    for method in type_node.get_methods():
+        instantiated_node.add_reference(method, ua.ObjectIds.HasComponent,True, False)
+    return instantiated_node
+
+def add_reference_to_type_properties(instantiated_node, type_node):
+    '''Adds reference to all properties of type object to node from one node to another'''
+    for property in type_node.get_children(refs=ua.ObjectIds.HasProperty):
+        instantiated_node.add_reference(property, ua.ObjectIds.HasTypeDefinition, True, False)
+    return instantiated_node
+
+def get_child_node_by_name(parent, child_name:str):
+    childrens = parent.get_referenced_nodes(ua.ObjectIds.References, ua.BrowseDirection.Forward, nodeclassmask=ua.NodeClass.Object)
+    result = {node.get_attribute(ua.AttributeIds.DisplayName).Value.Value.Text: node for node in childrens}
+
+    if child_name in result:
+        return result[child_name]
+    else:
+        return None
         
+
+def get_node_members(node, server):
+    '''Retun a dictionary of node of list of members
+    Keys:
+        PropertyType: contain a list of property nodes
+        Variables: contain a list of variable nodes
+        Methods: contain a list of method nodes
+    '''
+    members = {'Properties':[], 'Variables':[], 'Methods':[]}
+    for child in node.get_children():
+        child_type = child.get_type_definition()
+
+        if child_type is not None:
+            type_node = server.get_node(child_type)
+            bname = type_node.get_attribute(ua.AttributeIds.BrowseName).Value.Value.Name
+            if bname == 'PropertyType':
+                members['Properties'].append(child)            
+            elif bname == 'BaseDataVariableType':
+                members['Variables'].append(child)
+        else:
+            node_class = child.get_attribute(ua.AttributeIds.NodeClass).Value.Value
+            if node_class == ua.NodeClass.Method:
+                members['Methods'].append(child)
+    return members
+
 # END NODE_INSTANCE CLASS MEMBERS-------------------------------------
 #self.add_reference(ua.ObjectIds.ModellingRule_Mandatory, ua.ObjectIds.HasModellingRule, True, False)
 #ua.NodeId(guid,parent.NamespaceIndex,ua.NodeIdType.String)

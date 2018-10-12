@@ -62,36 +62,28 @@ if __name__ == "__main__":
 
     component = types_folder.add_object_type(name_space_index,"Component")
     component_propoerty = component.add_property(name_space_index, "name", 0, varianttype=ua.VariantType.String)
-    component_propoerty .set_modelling_rule(True)
-    component_propoerty.set_writable()
+    component_propoerty.set_modelling_rule(True)
+    component_variable = component.add_variable(name_space_index, "age", 0, varianttype=ua.VariantType.String)
+    component_variable .set_modelling_rule(True)
+    #component.add_method(name_space_index,"ChangeProperty", func, [], [ua.VariantType.Boolean])
+    #component.add_method(name_space_index,"ChangeVariable", func, [], [ua.VariantType.Boolean])
 
-    # oep_file_type = types_folder.add_object_type(name_space_index,"OepFileType")
-    # oep_file_type.add_reference(ua.NodeId(identifier= ua.ObjectIds.FileType), ua.ObjectIds.HasSubtype,forward=False)
-    # method1 = oep_file_type.add_method(name_space_index,"function", func, [], [ua.VariantType.Boolean])
-    # prop = oep_file_type.add_property(name_space_index, "state", 0, varianttype=ua.VariantType.Int32)
-    # prop.set_modelling_rule(True)
-
-    # oep_some_type = types_folder.add_object_type(name_space_index,"OepSomeType")
-    # oep_some_type.add_reference(oep_file_type, ua.ObjectIds.HasSubtype,forward=False)
-    # oep_some_type.add_method(name_space_index,"some_function", func, [], [ua.VariantType.Boolean])
-    # oep_some_type.add_property(name_space_index, "some_state", 0, varianttype=ua.VariantType.Int32).set_modelling_rule(True)
-    
+  
     #instatiate objects
     Component1 = library_folder.add_object(name_space_index, "Component1", objecttype=component)
-    Component1.set_modelling_rule(True)
-    Component2 = library_folder.add_object(name_space_index, "Component2", objecttype=component)
+    #Component2 = library_folder.add_object(name_space_index, "Component2", objecttype=component)
+
     
 
     server.start()
 
+    #print(ni.get_child_node_by_name(component_folder, 'Workspace'))
 
-    def get_child_node_by_name(parent, child_name:str):
-        childrens = parent.get_referenced_nodes(ua.ObjectIds.References, ua.BrowseDirection.Forward, nodeclassmask=ua.NodeClass.Object)
-        result = {node.get_attribute(ua.AttributeIds.DisplayName).Value.Value.Text: node for node in childrens}
+    #convert node to xml
+    print('All registered childrens')
+    for c in Component1.get_children():
+        print(c)
+    print('expecte properties')
+    for p in component.get_children():
+        print(server.get_node(p).get_attribute(ua.AttributeIds.DataType))
 
-        if child_name in result:
-            return result[child_name]
-        else:
-            return None
-    
-    print(get_child_node_by_name(component_folder, 'Workspace'))
