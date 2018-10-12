@@ -24,7 +24,7 @@ class NodeInstance(object):
             return False
         
     @uamethod
-    def save_node_instance(self, parent, nodeid)->bool:
+    def ssave_node_instance(self, parent, nodeid)->bool:
         exporter = XmlExporter(self._server)
         node = self._server.get_node(nodeid)
         
@@ -54,7 +54,7 @@ class NodeInstance(object):
         type_node = self._server.get_node(typeid)
 
         try:
-            instantiated_node =parent_node.add_object(ua.NodeId(id,parent.NamespaceIndex,ua.NodeIdType.String), name, objecttype=typeid)
+            instantiated_node = parent_node.add_object(parent.NamespaceIndex, name, objecttype=typeid)
             self.add_reference_to_type_methods(instantiated_node,type_node)
             print('Instantiated object with id: {0}'.format(instantiated_node))
             return True
@@ -62,6 +62,15 @@ class NodeInstance(object):
             print('Failed to instantiate node on server {0} : {1}'.format(self._server.name, e))
             return False
         instantiated_node = self.add_reference_to_type_methods(instantiated_node,type_node)
+
+    @uamethod
+    def save_node_instance(self, parent)->bool:
+        parent_node = self._server.get_node(parent)
+        for property in parent_node.get_properties():
+            print(property.get_value)
+            print(property.get_browse_name().Name)
+        return True
+    
    
     def add_reference_to_type_methods(self,instantiated_node,type_node):
         '''Adds reference to all methods of type object to node from one node to another'''
@@ -73,3 +82,4 @@ class NodeInstance(object):
         
 # END NODE_INSTANCE CLASS MEMBERS-------------------------------------
 #self.add_reference(ua.ObjectIds.ModellingRule_Mandatory, ua.ObjectIds.HasModellingRule, True, False)
+#ua.NodeId(guid,parent.NamespaceIndex,ua.NodeIdType.String)
