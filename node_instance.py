@@ -110,7 +110,7 @@ def get_node_members(node, server):
 
         if child_type is not None:
             type_node = server.get_node(child_type)
-            bname = type_node.get_attribute(ua.AttributeIds.BrowseName).Value.Value.Name
+            bname = type_node.get_attribute(ua.AttributeIds.BrowseName).Value.Value.Name 
             if bname == 'PropertyType':
                 members['Properties'].append(child)            
             elif bname == 'BaseDataVariableType':
@@ -120,6 +120,53 @@ def get_node_members(node, server):
             if node_class == ua.NodeClass.Method:
                 members['Methods'].append(child)
     return members
+
+
+
+def get_node_members_genrators(node, server):
+    '''Retun a dictionary of node of list of members
+    Keys:
+        PropertyType: contain a list of property nodes
+        Variables: contain a list of variable nodes
+        Methods: contain a list of method nodes
+    '''
+
+def properties_generator(node, server):
+    for child in node.get_children():
+        child_type = child.get_type_definition()
+        if child_type is not None:
+            type_node = server.get_node(child_type)
+            bname = type_node.get_attribute(ua.AttributeIds.BrowseName).Value.Value.Name 
+            if bname == 'PropertyType':
+                yield child  
+
+def variables_generator(node, server):
+    for child in node.get_children():
+        child_type = child.get_type_definition()
+        if child_type is not None:
+            type_node = server.get_node(child_type)
+            bname = type_node.get_attribute(ua.AttributeIds.BrowseName).Value.Value.Name                 
+            if bname == 'BaseDataVariableType':
+                yield child
+
+def methods_generator(node, server):
+    for child in node.get_children():
+        child_type = child.get_type_definition()        
+        if child_type is None:
+            node_class = child.get_attribute(ua.AttributeIds.NodeClass).Value.Value
+            if node_class == ua.NodeClass.Method:
+                yield child
+
+def get_child_nodes_generator(node, server):
+    '''xxx'''
+    for child in node.get_children():
+        child_type = child.get_type_definition()
+        if child_type is not None:
+            type_node = server.get_node(child_type)
+            for x in type_node.get_references(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse):
+                pass
+                if x.BrowseName.Name == 'FileType':
+                    yield child
 
 # END NODE_INSTANCE CLASS MEMBERS-------------------------------------
 #self.add_reference(ua.ObjectIds.ModellingRule_Mandatory, ua.ObjectIds.HasModellingRule, True, False)

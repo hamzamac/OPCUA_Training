@@ -1,0 +1,10 @@
+<opcua_emulation_platform version="1.0">
+    <system guid="ns=2;i=3">
+        <metadata />
+    </system>
+    <component guid="ns=2;i=30">
+        <metadata>
+            <property name="state">0</property>
+        </metadata>
+    </component>
+</opcua_emulation_platform>

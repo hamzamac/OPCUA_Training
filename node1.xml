@@ -1,0 +1,5 @@
+<opcua_emulation_platform version="1.0">
+    <system guid="ns=2;i=3">
+        <metadata />
+    </system>
+</opcua_emulation_platform>
