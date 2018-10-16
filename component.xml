@@ -1,0 +1,22 @@
+<opcua_emulation_platform version="1.0">
+    <component guid="0350b01a-cb84-11e8-a815-064c8a33a2c2">
+        <metadata>
+            <property name="base_body" />
+            <variable name="frame">[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]</variable>
+        </metadata>
+        <component_metadata guid="metadata">
+            <metadata>
+                <property name="guid">0350b01a-cb84-11e8-a815-064c8a33a2c2</property>
+                <property name="name">tisdags</property>
+                <property name="version">Version</property>
+                <property name="owner">42009b80-c63a-11e8-a815-064c8a33a2c2</property>
+                <property name="manufacturer">Componenter</property>
+                <property name="model">Model</property>
+                <property name="eCl@ss">eCl@ss</property>
+                <property name="description">Description</property>
+                <property name="key_words">Key words</property>
+                <property name="thumbnail">Thumbnail</property>
+            </metadata>
+        </component_metadata>
+    </component>
+</opcua_emulation_platform>

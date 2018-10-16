@@ -121,39 +121,44 @@ if __name__ == "__main__":
     # else:
     #     print('end')
     
+    def add_node_to_tree(child_node):
+        parent_nodeid = child_node.get_parent().nodeid.to_string()
+        paent_element = tree.find(".//*[@guid='{0}']".format(parent_nodeid))
+        
+        node_type = child_node.get_references(refs=ua.ObjectIds.HasTypeDefinition, direction=ua.BrowseDirection.Forward)[0]
+        node_type_name = node_type.BrowseName.Name
+        #child_node.server.get_node(node_type).get_attribute(ua.AttributeIds.BrowseName).Value.Value.Name
+       
+        print(node_type_name)
+        #TODO: auto detect node type
+        node_element = SubElement(paent_element, node_type_name)
+        node_element.set('guid', child_node.nodeid.to_string())
+        node_metadata = SubElement(node_element, 'metadata')
+        for property in ni.properties_generator(child_node, server):
+            node_propoerty = SubElement(node_metadata, 'property')
+            node_propoerty.set('name', property.get_attribute(ua.AttributeIds.BrowseName).Value.Value.Name)
+            node_propoerty.text =  str(property.get_attribute(ua.AttributeIds.Value).Value.Value)        
 
-
-    def somefunc(gen_list, tree):
+    def somefunc(gen_list, tree, add_node_to_tree):
         if len(gen_list) > 0:
             child_gen_list = []
             for generator in gen_list:
                 for child_node in generator:
                     print(child_node.get_path(as_string=True))
                     # Begin Experiment
-                    parent_nodeid = child_node.get_parent().nodeid.to_string()
-                    paent_element = tree.find(".//*[@guid='{0}']".format(parent_nodeid))
-                    
-                    #node_type = child_node.get_type_definition()
-
-                    node_element = SubElement(paent_element, 'component')
-                    node_element.set('guid', child_node.nodeid.to_string())
-                    node_metadata = SubElement(node_element, 'metadata')
-                    for property in ni.properties_generator(child_node, server):
-                        node_propoerty = SubElement(node_metadata, 'property')
-                        node_propoerty.set('name', property.get_attribute(ua.AttributeIds.BrowseName).Value.Value.Name)
-                        node_propoerty.text =  str(property.get_attribute(ua.AttributeIds.Value).Value.Value)
+                    add_node_to_tree(child_node)
                     # End Experiment 
                     child_gen_list.append(ni.get_child_nodes_generator(child_node, server))
             else: 
                 tree.write('tree.xml') 
-                somefunc(child_gen_list, tree)
+                somefunc(child_gen_list, tree, add_node_to_tree)
         return tree
 
     print('*********')
     #tree = ElementTree(element=Element('opcua_emulation_platform', {'version':'1.0'}))
     tree = get_xml_from_node(my_file, 'component') 
     #tree.write('my_file.xml')            
-    tree = somefunc([gen], tree)
+    tree = somefunc([gen], tree, add_node_to_tree)
     # path = ".[@guid='{0}']".format(my_file_child1.get_parent().nodeid.to_string())
     # parent = tree.getroot().find(path)
     # parent.append(Element('Child1'))
