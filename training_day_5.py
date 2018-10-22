@@ -87,8 +87,8 @@ if __name__ == "__main__":
     
     server.start()
     #my_file.get_children()
-    node = server.get_node(my_file.get_type_definition())
-    methods = node.get_referenced_nodes(direction=ua.BrowseDirection.Inverse, nodeclassmask=ua.NodeClass.ObjectType).pop()
+    #node = server.get_node(my_file.get_type_definition())
+    #methods = node.get_referenced_nodes(direction=ua.BrowseDirection.Inverse, nodeclassmask=ua.NodeClass.ObjectType).pop()
     # print(my_file.get_referenced_nodes())
     # print(my_file.get_type_definition())
     # print()

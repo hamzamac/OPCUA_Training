@@ -87,3 +87,4 @@ if __name__ == "__main__":
     for p in component.get_children():
         print(server.get_node(p).get_attribute(ua.AttributeIds.DataType))
 
+    
