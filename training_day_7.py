@@ -169,8 +169,8 @@ if __name__ == "__main__":
 
 
     # print('*********')
-    # for n in node_manager._add_childs([my_file]):
-    #     print('Child', n.get_path(as_string=True))
+    for n in node_manager._add_childs([my_file]):
+        print('Child', n.get_path(as_string=True))
         
         
     

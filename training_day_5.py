@@ -34,6 +34,7 @@ if __name__ == "__main__":
     component_folder = server.get_root_node().add_folder(name_space_index, "OEP")
     library_folder = component_folder.add_folder(name_space_index, "Library")
     workspace_folder = component_folder.add_folder(name_space_index, "Workspace")
+    component_folder = component_folder.add_folder(name_space_index, "Workspace")
     types_folder = component_folder.add_folder(name_space_index, "Types")
 
     i = ni.NodeInstance(server)
@@ -48,13 +49,6 @@ if __name__ == "__main__":
     switch_propoerty = switch_object_type.add_property(name_space_index, "state", 0, varianttype=ua.VariantType.Int32)
     switch_propoerty .set_modelling_rule(True)
     switch_propoerty.set_writable()
-    # Hej! Kan du se den här?
-    #ja
-    # Nice! Proba att exekvera...
-    # det finns live share audio
-    # Det är riktigt bra! 
-    # Vi kan prova audio imorgon ;) Vi ses imorgon!
-    #vi ses
 
     oep_file_type = types_folder.add_object_type(name_space_index,"OepFileType")
     oep_file_type.add_reference(ua.NodeId(identifier= ua.ObjectIds.FileType), ua.ObjectIds.HasSubtype,forward=False)
@@ -68,14 +62,12 @@ if __name__ == "__main__":
     oep_some_type.add_property(name_space_index, "some_state", 0, varianttype=ua.VariantType.Int32).set_modelling_rule(True)
     
 
-    
-    
-
 
     #instatiate objects
     switch = workspace_folder.add_object(name_space_index, "Switch", objecttype=switch_object_type)
     my_file = workspace_folder.add_object(name_space_index, "MyFile", objecttype=oep_file_type)
     
+    print(my_file.get_attribute(ua.AttributeIds.DisplayName))
     #my_file.set_modelling_rule(True)
     
 

@@ -50,26 +50,11 @@ class NodeInstance(object):
 
   
     @uamethod
-    def create_node_instance(self,parent,name,typeid):
-        parent_node = self._server.get_node(parent)
-        type_node = self._server.get_node(typeid)
-
-        try:
-            instantiated_node = parent_node.add_object(parent.NamespaceIndex, name, objecttype=typeid)
-            self.add_reference_to_type_methods(instantiated_node,type_node)
-            print('Instantiated object with id: {0}'.format(instantiated_node))
-            return True
-        except Exception as e:
-            print('Failed to instantiate node on server {0} : {1}'.format(self._server.name, e))
-            return False
-        instantiated_node = self.add_reference_to_type_methods(instantiated_node,type_node)
+    def create_node_instance(self, parent,name,typeid):
+        pass
 
     @uamethod
     def save_node_instance(self, parent)->bool:
-        parent_node = self._server.get_node(parent)
-        for property in parent_node.get_properties():
-            print(property.get_value)
-            print(property.get_browse_name().Name)
         return True
     
 
@@ -84,7 +69,7 @@ def add_reference_to_type_methods(instantiated_node,type_node):
 def add_reference_to_type_properties(instantiated_node, type_node):
     '''Adds reference to all properties of type object to node from one node to another'''
     for property in type_node.get_children(refs=ua.ObjectIds.HasProperty):
-        instantiated_node.add_reference(property, ua.ObjectIds.HasTypeDefinition, True, False)
+        instantiated_node.add_reference(property, ua.ObjectIds.HasProperty, True, False)
     return instantiated_node
 
 def get_child_node_by_name(parent, child_name:str):
